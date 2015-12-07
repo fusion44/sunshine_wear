@@ -16,14 +16,13 @@
 
 package com.example.android.sunshine.app.gcm;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,13 +35,11 @@ import org.json.JSONObject;
 
 public class MyGcmListenerService extends GcmListenerService {
 
+    public static final int NOTIFICATION_ID = 1;
     private static final String TAG = "MyGcmListenerService";
-
     private static final String EXTRA_DATA = "data";
     private static final String EXTRA_WEATHER = "weather";
     private static final String EXTRA_LOCATION = "location";
-
-    public static final int NOTIFICATION_ID = 1;
 
     /**
      * Called when message is received.
@@ -86,8 +83,8 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param message The alert message to be posted.
      */
     private void sendNotification(String message) {
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat mNotificationManager
+                = NotificationManagerCompat.from(getApplicationContext());
         PendingIntent contentIntent =
                 PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 
