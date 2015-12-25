@@ -88,6 +88,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
     private static final int INDEX_MAX_TEMP = 1;
     private static final int INDEX_MIN_TEMP = 2;
     private static final int INDEX_SHORT_DESC = 3;
+
+    private static final String WEATHER_ID = "WeatherID";
+    private static final String SHORT_DESC = "ShortDesc";
+    private static final String MIN_TEMP = "MinTemp";
+    private static final String MAX_TEMP = "MaxTemp";
+    private static final String TIMESPAMP = "Timestamp";
+
     public final String TAG = SunshineSyncAdapter.class.getSimpleName();
     private DataMap mLastWearData = null;
     private GoogleApiClient mApiClient;
@@ -485,11 +492,11 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
 
                 if (DateUtils.isToday(dateTime)) {
                     mLastWearData = new DataMap();
-                    mLastWearData.putLong("Timestamp", dateTime);
-                    mLastWearData.putDouble("MaxTemp", high);
-                    mLastWearData.putDouble("MinTemp", low);
-                    mLastWearData.putString("ShortDesc", description);
-                    mLastWearData.putInt("WeatherID", weatherId);
+                    mLastWearData.putLong(TIMESPAMP, dateTime);
+                    mLastWearData.putDouble(MAX_TEMP, high);
+                    mLastWearData.putDouble(MIN_TEMP, low);
+                    mLastWearData.putString(SHORT_DESC, description);
+                    mLastWearData.putInt(WEATHER_ID, weatherId);
                 }
 
                 cVVector.add(weatherValues);
