@@ -15,6 +15,8 @@ public class SunshineSyncService extends Service {
         synchronized (sSyncAdapterLock) {
             if (sSunshineSyncAdapter == null) {
                 sSunshineSyncAdapter = new SunshineSyncAdapter(getApplicationContext(), true);
+            } else {
+                sSunshineSyncAdapter.syncNow();
             }
         }
     }

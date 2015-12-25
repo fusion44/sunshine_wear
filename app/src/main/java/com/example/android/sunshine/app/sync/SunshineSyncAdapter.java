@@ -505,6 +505,19 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
         }
     }
 
+    public void syncNow() {
+        if (mApiClient == null) {
+            initApiClient();
+            return;
+        }
+
+        if (mApiClient.isConnected()) {
+            new DoWorkAsyncTask().execute();
+        } else {
+            mApiClient.connect();
+        }
+    }
+
     /**
      * Helper method to handle insertion of a new location in the weather database.
      *
