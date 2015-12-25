@@ -33,8 +33,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Wearable;
 
 import java.lang.ref.WeakReference;
 import java.util.TimeZone;
@@ -84,8 +92,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
     }
 
-    private class Engine extends CanvasWatchFaceService.Engine {
+    private class Engine extends CanvasWatchFaceService.Engine implements
+            GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+            MessageApi.MessageListener {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
+        private final String TAG = Engine.class.getSimpleName();
         boolean mRegisteredTimeZoneReceiver = false;
         Paint mBackgroundPaint;
         Paint mTextPaint;
@@ -108,6 +119,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
          * disable anti-aliasing in ambient mode.
          */
         boolean mLowBitAmbient;
+        private GoogleApiClient mApiClient;
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -129,6 +141,20 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.digital_text));
 
             mTime = new Time();
+        }
+
+        private void initApiClient() {
+            if (mApiClient == null) {
+                mApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                        .addApi(Wearable.API)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .build();
+            }
+
+            if (!mApiClient.isConnected()) {
+                mApiClient.connect();
+            }
         }
 
         @Override
@@ -171,6 +197,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
             SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+
+            initApiClient();
         }
 
         private void unregisterReceiver() {
@@ -179,6 +207,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = false;
             SunshineWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+
+            mApiClient.disconnect();
         }
 
         @Override
@@ -295,6 +325,22 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
                         - (timeMs % INTERACTIVE_UPDATE_RATE_MS);
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
             }
+        }
+
+        @Override public void onConnected(Bundle bundle) {
+            Wearable.MessageApi.addListener(mApiClient, this);
+        }
+
+        @Override public void onConnectionSuspended(int i) {
+        }
+
+        @Override public void onConnectionFailed(ConnectionResult connectionResult) {
+        }
+
+        @Override public void onMessageReceived(MessageEvent messageEvent) {
+            DataMap dm = DataMap.fromByteArray(messageEvent.getData());
+            Log.d(TAG, "onMessageReceived: " + dm);
+            // TODO: use map
         }
     }
 }
