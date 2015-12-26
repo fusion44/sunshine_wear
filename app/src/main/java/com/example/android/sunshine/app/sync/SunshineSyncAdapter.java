@@ -226,6 +226,7 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
     }
 
     @Override public void onConnected(Bundle bundle) {
+        syncNow();
     }
 
     @Override public void onConnectionSuspended(int i) {
