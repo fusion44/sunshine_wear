@@ -1,6 +1,16 @@
 package com.example.android.wearsunshine;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class WatchUtility {
+    public static String getFormattedDate() {
+        Date date = GregorianCalendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd yyyy");
+        return sdf.format(date);
+    }
+
     /**
      * Helper method to provide the art resource id according to the weather condition id returned
      * by the OpenWeatherMap call.

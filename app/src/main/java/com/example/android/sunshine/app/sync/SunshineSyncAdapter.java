@@ -493,9 +493,8 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter implements 
                 if (DateUtils.isToday(dateTime)) {
                     mLastWearData = new DataMap();
                     mLastWearData.putLong(TIMESPAMP, dateTime);
-                    mLastWearData.putDouble(MAX_TEMP, high);
-                    mLastWearData.putDouble(MIN_TEMP, low);
-                    mLastWearData.putString(SHORT_DESC, description);
+                    mLastWearData.putString(MAX_TEMP, Utility.formatTemperature(getContext(), high));
+                    mLastWearData.putString(MIN_TEMP, Utility.formatTemperature(getContext(), low));
                     mLastWearData.putInt(WEATHER_ID, weatherId);
                 }
 
